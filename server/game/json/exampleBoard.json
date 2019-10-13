@@ -1,0 +1,40 @@
+{
+    "s2c": {
+        "board": [
+            [
+                "p",
+                "u",
+                "a",
+                "u",
+                "A",
+                "etc"
+            ],
+            [
+                "u",
+                "u",
+                "u",
+                "etc"
+            ],
+            "etc"
+        ],
+        "turnResponse": {
+            "sequences": {
+                "player": 1,
+                "ai": 2
+            },
+            "serverDateTime": "8/8/2019 23:01:01",
+            "whosTurn": "player1"
+        }
+    },
+    "c2s": {
+        "takeTurn": {
+            "turn-id": "player2-1",
+            "who": "player2",
+            "position": {
+                "row": 4,
+                "col": 5
+            },
+            "timeRemaining": 15.50
+        }
+    }
+}

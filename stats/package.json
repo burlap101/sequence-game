@@ -1,0 +1,27 @@
+{
+  "name": "stats",
+  "version": "1.0.0",
+  "description": "Stats for COSC560 sequence game",
+  "main": "js/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\"",
+    "build": "webpack --config webpack.config.js && cp src/*.html ../server/public/stats/",
+    "dev": "nodemon --exec 'webpack --config webpack.config.js'",
+    "lint": "./node_modules/.bin/eslint src/js/",
+    "fix": "./node_modules/.bin/eslint src/js/ --fix"
+  },
+  "author": "J.Crowley",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/node": "^7.6.3",
+    "@babel/preset-env": "^7.6.3",
+    "babel-loader": "^8.0.6",
+    "d3": "^5.12.0",
+    "eslint": "^6.5.1",
+    "nodemon": "^1.19.3",
+    "webpack": "^4.41.1",
+    "webpack-cli": "^3.3.9"
+  }
+}
