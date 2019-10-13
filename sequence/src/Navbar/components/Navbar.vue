@@ -24,12 +24,7 @@
           >
         </li>
         <li class="nav-item">
-          <a
-            class="nav-link"
-            target="_blank"
-            v-bind:href="statsurl"
-            >Stats</a
-          >
+          <a class="nav-link" target="_blank" v-bind:href="statsurl">Stats</a>
         </li>
       </ul>
       <span
@@ -42,16 +37,15 @@
 </template>
 
 <script>
-
 const statsUrl = "http://" + window.location.hostname + ":50135/stats";
 
 export default {
   name: "Navbar",
   props: ["gameid"],
   data() {
-    return ({
-      statsurl : statsUrl
-    })
+    return {
+      statsurl: statsUrl
+    };
   }
 };
 </script>

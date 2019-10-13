@@ -145,7 +145,6 @@ class CardDeck {
 
     mongoClient.deleteMany({"gameid": gameid});
 
-    console.log("Deleted " + deckCount + " CardDeck documents from DB");
     return deckCount 
   }
 }

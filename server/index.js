@@ -64,12 +64,9 @@ var socketConns = 0;
 io.on('connection', async function (socket) {
     
     socketConns += 1;
-    console.log("A user connected. Connections: " + socketConns);
-    console.log("the newest client id: " + socket.id);
 
     socket.on('disconnect', function() {
         socketConns -= 1;
-        console.log('user disconnected. Connections: ' + socketConns);
     })
 
     sendStatus = function(s) {
@@ -81,23 +78,18 @@ io.on('connection', async function (socket) {
 
 
     socket.on('join_room', async function(data) {
-        console.log("Player joining room " + data.gameid);
         let theGame = await games.findOne({"gameid" : data.gameid})
-        console.log(theGame)
         socket.join(data.gameid);
         socket.broadcast.to(data.gameid).emit('player_joined', {name: data.username});
     })
 
     socket.on('card_played', async function(data) {
         let newHand = await CardDeck.cardPlayed(data.gameid, data.player, data.cardName);
-        console.log("New Hand: " + newHand);
         socket.emit('new_hand', newHand);
     })
 
     socket.on('take_turn', async function(data) {
-        console.log("Take turn argument passed in: ");
         let updatedGame = await GameBoard.takeTurn(data.gameid, data.position, data.s)
-        console.log(updatedGame);
         io.in(data.gameid).emit('game_update', updatedGame);
     })
 
@@ -113,7 +105,6 @@ io.on('connection', async function (socket) {
         } else if(text.startsWith('!')) {
           try {
             let cmd = text.slice(1).split(' ');
-            console.log(cmd);
             if(cmd[0] == 'username') {
               if (cmd.length < 2) {
                 sendStatus('Usage: !username <new_name>');
@@ -121,7 +112,7 @@ io.on('connection', async function (socket) {
               }
               let game = await games.findOne({ "gameid": gameid });
 
-              for (plyr of game.players) {
+              for (let plyr of game.players) {
                 if (plyr.name == who) {
                   plyr.name = cmd[1].mytrim();
                 }
@@ -147,6 +138,8 @@ io.on('connection', async function (socket) {
                 }
               }
 
+              CardDeck.burnCardsDoc(gameid);
+
               await games.findOneAndReplace({ "gameid": gameid }, game);
 
               sendStatus('Game forfeited successfully (or unsucessfully depends if you wanted to win.... Hint: now you can\'t)');
@@ -159,7 +152,6 @@ io.on('connection', async function (socket) {
               io.in(data.gameid).emit('game_update', game);
 
             } else {
-              console.log("invalid command received.");
               sendStatus("Invalid command");
             }
 
@@ -174,10 +166,7 @@ io.on('connection', async function (socket) {
                 who: who,
                 text: text,
                 when: when
-            }, 
-            function() {
-                console.log(data)
-            });
+            })
             socket.broadcast.to(data.gameid).emit("new_chat_message", data)
         }
         

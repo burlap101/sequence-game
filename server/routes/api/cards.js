@@ -17,14 +17,10 @@ router.get('/', async function(req, res) {
         let gameid = req.query.gameid
         let player = req.query.player
 
-        // console.log("player="+player+" gameid="+gameid);
-
         if(gameid !== undefined && player !== undefined) {
             let theCards = await cards.findOne({"gameid" : gameid});
             if(Object.keys(theCards.hands).length == 1 && !Object.keys(theCards.hands).includes(player)) {
-                console.log("Attempting to add " + player + " to the players list of the cards document")
                 let newPlayerHand = await CardDeck.newPlayerJoined(gameid, player)
-                console.log(player + "'s cards : " + newPlayerHand);
                 res.send(newPlayerHand);
             } else if(Object.keys(theCards.hands).includes(player)) {
                 res.send(theCards.hands[player]);

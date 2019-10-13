@@ -29246,7 +29246,6 @@ function myD3(gamesObj) {
   cols.splice(cols.indexOf('finished'), 1);
   cols.splice(cols.indexOf('theWinner'), 1);
   cols.splice(cols.indexOf('winnerFound'), 1);
-  console.log(gamesObj);
   var tbl = d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#active-games");
   tbl.select("thead").select("tr").selectAll("th").data(cols).enter().append("th").text(function (d) {
     var rexp = /([A-Z])/;
@@ -29254,7 +29253,6 @@ function myD3(gamesObj) {
 
     while (n != null) {
       d = d.slice(0, n.index) + " " + n[0].toLowerCase() + d.slice(n.index + 1);
-      console.log("New d: " + d);
       n = d.match(rexp);
     }
 
@@ -29353,7 +29351,6 @@ function myD3(gamesObj) {
   var myChart = d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#my-chart").append("svg").attr("width", chartDims.width).attr("height", chartDims.height).append("g").attr("transform", "translate(" + chartDims.margin + "," + chartDims.margin + ")");
   chartDims.height -= 2 * chartDims.margin;
   chartDims.width -= 2 * chartDims.margin;
-  console.log(gamesObj);
 
   for (var i = 0; i < gamesObj.length; i++) {
     var tempcounts = 1;
@@ -29393,7 +29390,6 @@ function myD3(gamesObj) {
     }
 
     gamesObj[i].activeGames = tempcounts;
-    console.log(gamesObj[i].activeGames);
   }
 
   var xAxis = d3__WEBPACK_IMPORTED_MODULE_0__["scaleTime"]().domain([d3__WEBPACK_IMPORTED_MODULE_0__["min"](gamesObj, function (d) {
@@ -29417,8 +29413,6 @@ fetch(baseUrl + "/api/game?gameid=all").then(function (res) {
   return res.json();
 }).then(function (resj) {
   myD3(resj);
-})["catch"](function (error) {
-  console.log(error.message);
 });
 
 /***/ })

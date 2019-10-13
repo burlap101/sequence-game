@@ -56,14 +56,6 @@ export default {
   },
   methods: {
     sendMessage: function() {
-      // commands are handled here
-      if (this.message.text.startsWith("!")) {
-        let theCommand = this.message.text.toLowerCase();
-        if (theCommand.startsWith("!username")) {
-          this.message.who = this.message.text.split(" ")[1];
-        }
-      }
-
       // All messages handled here
       if (this.message.text != "") {
         this.socket.emit("new_chat_message", this.message);
@@ -73,6 +65,15 @@ export default {
           when: new Date().toTimeString().split(" ")[0]
         });
       }
+
+      // commands that alter Vue data dealt with here
+      if (this.message.text.startsWith("!")) {
+        let theCommand = this.message.text.toLowerCase();
+        if (theCommand.startsWith("!username")) {
+          this.message.who = this.message.text.split(" ")[1];
+        }
+      }
+
       this.message.text = "";
     }
   },

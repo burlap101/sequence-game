@@ -42,7 +42,6 @@ router.get('/', async function(req, res) {
             } else if (playerNames.includes(username)) {
                 res.send(theGame);
             } else {
-                console.log(theGame);
                 throw Error("Invalid parameters provided");
             }
         } else {
@@ -64,15 +63,11 @@ router.get('/', async function(req, res) {
 router.post('/', async function(req, res) {
     try {
         let uname = req.body.username;
-        console.log(uname);
         if(uname !== undefined && uname !== "") {
-            console.log("Game being created with username: " + uname);
             let newGame = GameBoard.createGame(uname);
             CardDeck.initCards(newGame.gameid, uname); // initialising the cards only api requests handled elsewhere to avoid cheating
             const games = await loadGamesCollection();
             await games.insertOne(newGame);
-            console.log("Game created");
-
             res.status(201).send({ "gameid": newGame.gameid });
         } else {
             throw Error("Improper username provided with request");

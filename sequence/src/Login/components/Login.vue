@@ -85,7 +85,9 @@ export default {
         const res = await fetch(
           baseUrl + "?gameid=" + this.gameid + "&username=" + this.username
         );
-        const resj = await res.json();
+        if (!res.ok) {
+          throw Error("Game wasn't retrievable");
+        }
         localStorage.setItem("gameid", this.gameid);
         localStorage.setItem("username", this.username);
         this.$emit("next-app", "GameApp");

@@ -57,8 +57,6 @@ class GameBoard {
 
       gameObj.board[position.row][position.col] = s;
       let i = 0
-      console.log("The passed in s = " + s);
-      console.log("Here come the players...");
       for(i =0; i<gameObj.players.length; i++) {
         if(gameObj.players[i].s == s) {
           break;
@@ -81,6 +79,7 @@ class GameBoard {
           }
         }
       }
+      gameObj.turnsTaken += 1;
       await mongoClient.findOneAndReplace({"gameid": gameid}, gameObj);
       return gameObj;
 
@@ -93,11 +92,7 @@ class GameBoard {
     Array.prototype.spliceArray = function(index, n, array) {
       return Array.prototype.splice.apply(this, [index, n].concat(array));
     }
-    // let mongoClient = await this.loadGamesCollection();
-    // let gameObj = mongoClient.findOne({"gameid" : gameid});
-
-    // console.log(s);
-    // initiate the wilds as the corresponding spot
+    
     gameObj.board[0][0] = s.toUpperCase();
     gameObj.board[0][9] = s.toUpperCase();
     gameObj.board[9][0] = s.toUpperCase();
@@ -127,7 +122,6 @@ class GameBoard {
       gameObj.board[position.row].spliceArray(index, 5, newArray);
       seq += 1;
     }
-    console.log("checkForSequence: Row = " + gameObj.board[position.row].join(""));
 
     /* now the column */
     let col = [];
@@ -156,7 +150,6 @@ class GameBoard {
       }
       seq += 1;
     }
-    console.log("checkForSquence: Col = " + col);
     let diag = [];
     row = position.row;
     col = position.col;
@@ -200,7 +193,6 @@ class GameBoard {
         seq += 1;
       }
     }
-    console.log("checkForSequence: Diag1 = " + newDiag.join(""));
 
     diag = [];
     row = position.row;
@@ -246,7 +238,6 @@ class GameBoard {
         seq += 1;
       }
     }
-    console.log("checkForSequence: Diag2 = " + newDiag.join(""));
 
     // set the wilds back normal
     gameObj.board[0][0] = 'u';
@@ -277,7 +268,6 @@ class GameBoard {
     let gameCount = mongoClient.find({"gameid": gameid});
     mongoClient.deleteMany({"gameid": gameid});
 
-    console.log("Deleted " + gameCount + " GameBoard documents from DB");
     return gameCount 
   }
 
