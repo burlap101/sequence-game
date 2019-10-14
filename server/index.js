@@ -94,7 +94,7 @@ io.on('connection', async function (socket) {
     })
 
     socket.on('new_chat_message', async function(data) {
-        let who = data.who;
+        let who = data.who.mytrim();
         let text = data.text; 
         let gameid = data.gameid;
         let when = new Date();
@@ -106,7 +106,7 @@ io.on('connection', async function (socket) {
           try {
             let cmd = text.slice(1).split(' ');
             if(cmd[0] == 'username') {
-              if (cmd.length < 2) {
+              if (cmd.length < 2 || cmd[1].mytrim() == undefined) {
                 sendStatus('Usage: !username <new_name>');
                 return;
               }
@@ -121,7 +121,7 @@ io.on('connection', async function (socket) {
               if(game.playerTurn == who) {
                 game.playerTurn = cmd[1].mytrim();
               }
-              
+
               CardDeck.playerNameChange(gameid, who, cmd[1].mytrim());
               await games.findOneAndReplace({ "gameid": gameid }, game);
 
@@ -132,6 +132,8 @@ io.on('connection', async function (socket) {
                 "text": data.who + " changed their username to " + cmd[1]
                 }
               )
+              io.in(data.gameid).emit('game_update', game);
+
             } else if (cmd[0].mytrim() == "forfeit") {
               let game = await games.findOne({ "gameid": gameid });
               

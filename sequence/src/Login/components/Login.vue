@@ -112,11 +112,6 @@ export default {
         localStorage.setItem("gameid", resj.gameid);
         localStorage.setItem("username", this.username);
         this.$emit("next-app", "GameApp");
-        // if(!isProduction) {
-        //   window.location.replace("http://localhost:8080");
-        // } else {
-        //   await fetch(redirectUrl);
-        // }
       } catch (err) {
         this.error = err.message;
         console.log(err.message);

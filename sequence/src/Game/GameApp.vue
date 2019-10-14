@@ -10,7 +10,10 @@
         />
       </div>
       <div class="col-4">
-        <Chat v-bind:socket="socket" v-bind:opponent="opponent" />
+        <Chat v-bind:socket="socket" 
+          v-bind:opponent="opponent"
+          v-on:username-cmd="updateUsername"
+        />
       </div>
     </div>
   </div>
@@ -38,6 +41,11 @@ export default {
       username: localStorage.getItem("username"),
       gameid: localStorage.getItem("gameid")
     };
+  },
+  methods: {
+    updateUsername: function(newName) {
+      this.username = newName.trim();
+    }
   },
   created() {
     if (this.gameid !== undefined || this.username !== undefined) {

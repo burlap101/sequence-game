@@ -23,7 +23,7 @@ router.get('/', async function(req, res) {
             res.send(await games.find({}).toArray());
         } else if (gameid !== undefined && username !== undefined) {
             let theGame = await games.findOne({ "gameid": gameid });
-            let playerNames = []
+            let playerNames = [];
             for (let player of theGame.players) {
                 playerNames.push(player.name)
             }

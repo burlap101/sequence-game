@@ -70,7 +70,8 @@ export default {
       if (this.message.text.startsWith("!")) {
         let theCommand = this.message.text.toLowerCase();
         if (theCommand.startsWith("!username")) {
-          this.message.who = this.message.text.split(" ")[1];
+          this.message.who = this.message.text.split(" ")[1].trim();
+          this.$emit("username-cmd", this.message.who);
         }
       }
 
@@ -100,18 +101,18 @@ export default {
   },
   mounted() {
     // register the socket message types to look out for chat
-    this.socket.on("new_chat_message", data => {
+    this.socket.on("new_chat_message", (data) => {
       data.when = new Date().toTimeString().split(" ")[0];
       this.messages.push(data);
     });
-    this.socket.on("status", message => {
+    this.socket.on("status", (message) => {
       this.messages.push({
         who: "Gamebot",
         text: message,
         when: new Date().toTimeString().split(" ")[0]
       });
     });
-    this.socket.on("kick", reason => {
+    this.socket.on("kick", (reason) => {
       this.messages.push({
         who: "Gamebot",
         text: "You have been kicked: " + reason.text,

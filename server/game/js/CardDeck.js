@@ -127,16 +127,11 @@ class CardDeck {
     try {
       let mongoClient = await this.loadCardsCollection();
       let obj = await mongoClient.findOne({ "gameid" : gameid });
-      console.log(obj.hands);
-      let hand = [];
+      let hand = obj.hands[oldName];
 
       obj.hands[newName] = obj.hands[oldName];
 
-      console.log(obj.hands);
-
       delete obj.hands[oldName];
-
-      console.log(obj.hands);
 
       await mongoClient.findOneAndReplace({"gameid": gameid}, obj);
 
