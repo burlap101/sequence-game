@@ -117,7 +117,12 @@ io.on('connection', async function (socket) {
                   plyr.name = cmd[1].mytrim();
                 }
               }
-
+              
+              if(game.playerTurn == who) {
+                game.playerTurn = cmd[1].mytrim();
+              }
+              
+              CardDeck.playerNameChange(gameid, who, cmd[1].mytrim());
               await games.findOneAndReplace({ "gameid": gameid }, game);
 
               sendStatus('Username updated succesfully');

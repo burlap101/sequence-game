@@ -51,8 +51,6 @@ export default {
   },
   beforeMount() {
     this.socket.on("player_joined", opponent => {
-      console.log("player joined");
-      console.log(opponent);
       this.opponent = opponent;
     });
   }

@@ -194,7 +194,6 @@ export default {
         });
         this.playerTurn = !this.playerTurn;
         this.warning.isActive = false;
-        //TODO: create a winner socket event....
       } else {
         this.warning.isActive = true;
         this.warning.text = "It is not your turn";
@@ -204,13 +203,10 @@ export default {
       this.warning.isActive = false;
     },
     playJack: function(event) {
-      console.log(event.target.dataset.card);
       if (this.jacks.oneEyed.includes(event.target.dataset.card)) {
-        console.log("one eyed jack!");
         this.jacks.oneEyedSelected = true;
         this.jacks.name = event.target.dataset.card;
       } else if (this.jacks.twoEyed.includes(event.target.dataset.card)) {
-        console.log("two eyed jack!!");
         this.jacks.twoEyedSelected = true;
         this.jacks.name = event.target.dataset.card;
       }
@@ -228,11 +224,9 @@ export default {
 
   async created() {
     // first creating the board object and initiating it
-    console.log("Attempting to retrieve game");
     try {
       let jb = boardObj.rows;
       let theGame = await GameService.getGame(this.gameid, this.username);
-      console.log(theGame);
       for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
           if (theGame.board[i][j] != "u") {
@@ -243,7 +237,6 @@ export default {
       }
       this.jsonBoard = jb;
       this.playerTurn = theGame.playerTurn === this.username;
-      console.log(theGame.playerTurn);
       this.players = theGame.players;
       for (let p of this.players) {
         if (p.name === this.username) {
@@ -257,7 +250,6 @@ export default {
       console.log(err.message);
     }
 
-    console.log("attempting to get player's cards");
     try {
       this.playerHand = await CardService.getCards(this.gameid, this.username);
     } catch (err) {
@@ -286,7 +278,6 @@ export default {
 
       this.playerTurn = theGame.playerTurn == this.username;
 
-      console.log("this.playerTurn=" + this.playerTurn);
       this.players = theGame.players;
 
       for (let p of theGame.players) {
