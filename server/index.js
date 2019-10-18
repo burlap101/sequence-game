@@ -1,3 +1,11 @@
+/**
+ * index.js
+ * J.Crowley 220202294
+ * 
+ * Main entry point for the server. Includes all necessary code for the server implementation
+ * 
+ */
+
 String.prototype.mytrim = function () {
   let s = this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
   s = s.replace('\n', '');

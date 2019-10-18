@@ -1,0 +1,30 @@
+{
+  "name": "sequenceriot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "webpack-dev-server --inline --watch --hot --colors -d --port 8080"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "riot": "^4.6.5",
+    "socket.io-client": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
+    "@riotjs/cli": "^4.0.2",
+    "@riotjs/compiler": "^4.5.1",
+    "@riotjs/hot-reload": "^4.0.0",
+    "@riotjs/webpack-loader": "^4.0.1",
+    "babel-loader": "^8.0.6",
+    "eslint": "^6.5.1",
+    "nodemon": "^1.19.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2"
+  }
+}
