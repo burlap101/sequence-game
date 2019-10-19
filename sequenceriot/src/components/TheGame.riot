@@ -1,64 +1,50 @@
-<template>
+<the-game>
   <div>
     <div id="board-div" class="board">
-      <svg
-        v-bind:viewBox="
-          viewBox.xmin +
-            ' ' +
-            viewBox.ymin +
-            ' ' +
-            viewBox.width +
-            ' ' +
-            viewBox.height
-        "
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g v-bind:key="'row-' + irow" v-for="(row, irow) in jsonBoard">
-          <BoardCard
-            v-bind:card="card"
-            v-bind:imgParams="imgParams(irow, icard)"
-            v-bind:chipParams="chipParams(irow, icard)"
-            v-for="(card, icard) in row"
-            v-bind:key="irow + '-' + icard"
-            v-bind:bcid="irow + '-' + icard"
-            v-bind:data-card="card"
-            v-bind:playerHand="playerHand"
-            v-bind:playerTurn="playerTurn"
-            v-on:turn-taken="takeTurn"
-            v-bind:jacks="jacks"
-            v-on:jack-played="takeTurn"
-            v-on:show-warning="showWarning"
-            v-bind:winnerFound="winnerFound"
-          />
-        </g>
-      </svg>
+      <div>
+        <div each="{(row, irow) in state.jsonBoard}">
+          <boardcard
+            each="{(card, icard) in row}"
+            card="{card}"
+            imgParams="{methods.imgParams(irow, icard)}"
+            chipParams="{methods.chipParams(irow, icard)}"
+            bcid="{ irow + '-' + icard }"
+            data-card="{ card }"
+            player-hand="{ state.playerHand }"
+            player-turn="{ state.playerTurn }"
+            
+            jacks="{ state.jacks }"
+            
+            winnerFound="{ state.winnerFound }"
+         / >
+        </div>
+      </div>
     </div>
     <h3 class="text-center my-2">Your Hand</h3>
 
     <div id="players-hand-div" class="text-center players-hand">
       <span
-        v-bind:key="icard + card"
-        v-for="(card, icard) in playerHand"
+        each="{(card, icard) in state.playerHand}"
         class="players-card"
       >
         <img
-          v-bind:src="'/assets/cards_v/' + card + '.svg'"
+          src="{'/assets/cards_v/' + card + '.svg'}"
           height="90"
           width="60"
-          v-bind:data-card="card"
-          v-on:click="playJack"
+          data-card="{card}"
+          onclick="{methods.playJack}"
         />
       </span>
     </div>
     <div
-      v-if="winnerFound"
+      if="{ state.winnerFound }"
       class="alert alert-success text-primary"
       role="alert"
     >
-      {{ theWinner.name }}'s the winner!!!
+      { state.theWinner.name }'s the winner!!!
     </div>
     <div
-      v-else-if="playerTurn"
+      if="{ state.playerTurn }"
       id="turn-indicator"
       class="alert alert-success"
       role="alert"
@@ -66,14 +52,14 @@
       Your Turn
     </div>
 
-    <div v-else class="alert alert-warning" role="alert">
-      {{ opponent.name }}'s turn
+    <div if="{ !state.playerTurn }" class="alert alert-warning" role="alert">
+      { state.opponent.name }'s turn
     </div>
-    <div v-if="warning.isActive" class="alert alert-danger" role="alert">
-      {{ warning.text }}
+    <div if="{state.warning.isActive}" class="alert alert-danger" role="alert">
+      { warningText }
     </div>
     <div
-      v-if="jacks.oneEyedSelected || jacks.twoEyedSelected"
+      if="{state.jacks.oneEyedSelected || state.jacks.twoEyedSelected}"
       class="alert alert-primary"
       role="alert"
     >
@@ -81,228 +67,328 @@
       corner ones)
     </div>
   </div>
-</template>
 
-<script>
-import BoardCard from "./BoardCard.vue";
-import { CardService } from "../assets/js/CardService";
-import { GameService } from "../assets/js/GameService";
-import jsonBoard from "../assets/json/board_orientation.json";
+  <script>
+  import boardcard from "./boardcard.riot";
+  import { CardService } from "./assets/js/CardService";
+  import { GameService } from "./assets/js/GameService";
+  import jsonBoard from "./assets/json/board_orientation.json";
+  import io from 'socket.io-client'
+  import * as riot from 'riot'
+  import store from './assets/js/store'
 
-const fills = {
-  p: "#007BFF",
-  a: "#41b882",
-  u: "#000000"
-};
-
-const boardObj = (function() {
-  let boardObject = {
-    rows: []
+  const fills = {
+    p: "#007BFF",
+    a: "#41b882",
+    u: "#000000"
   };
 
-  for (let row of jsonBoard.jsonBoard.rows) {
-    boardObject.rows.push(
-      row.map(function(card) {
-        return { name: card, isOccupied: false, fill: fills["p"] };
-      })
-    );
-  }
-  return boardObject;
-})();
-
-export default {
-  name: "TheGame",
-  props: ["socket", "myopponent", "gameid", "username"],
-  components: {
-    BoardCard
-  },
-  data() {
-    return {
-      viewBox: {
-        xmin: 0,
-        ymin: 0,
-        width: 75,
-        height: 50
-      },
-      handBox: {
-        width: 850,
-        height: 150
-      },
-      playerTurn: true,
-      jacks: {
-        twoEyed: ["jd", "jc"],
-        oneEyed: ["jh", "js"],
-        twoEyedSelected: false,
-        oneEyedSelected: false,
-        name: ""
-      },
-      warning: {
-        text: "",
-        isActive: false
-      },
-      winnerFound: false,
-      theWinner: {},
-      playerIdentifier: "",
-      players: [],
-      playerHand: [],
-      opponent: this.myopponent,
-      theBoard: [],
-      jsonBoard: []
+  const boardObj = (function() {
+    let boardObject = {
+      rows: []
     };
-  },
 
-  methods: {
-    chipParams: function(irow, icard) {
-      return {
-        r: this.viewBox.height / 50,
-        opacity: 1.0,
-        cx: this.viewBox.width / 20 + (icard * this.viewBox.width) / 10,
-        cy: this.viewBox.height / 20 + (irow * this.viewBox.height) / 10
-      };
-    },
-    imgParams: function(irow, icard) {
-      return {
-        height: this.viewBox.height / 11,
-        width: this.viewBox.width / 11,
-        x: this.viewBox.width / 200 + (icard * this.viewBox.width) / 10,
-        y: this.viewBox.height / 200 + (irow * this.viewBox.height) / 10
-      };
-    },
-    takeTurn: async function(cardName, bcid) {
-      let position = {
-        row: bcid.split("-")[0],
-        col: bcid.split("-")[1]
-      };
-      if (this.playerTurn) {
-        if (this.jacks.oneEyedSelected || this.jacks.twoEyedSelected) {
-          this.socket.emit("card_played", {
-            cardName: this.jacks.name,
-            gameid: this.gameid,
-            player: this.username
-          });
-        } else {
-          this.socket.emit("card_played", {
-            cardName: cardName,
-            gameid: this.gameid,
-            player: this.username
-          });
-        }
-        this.socket.emit("take_turn", {
-          gameid: this.gameid,
-          position: position,
-          s: this.playerIdentifier
-        });
-        this.playerTurn = !this.playerTurn;
-        this.warning.isActive = false;
-      } else {
-        this.warning.isActive = true;
-        this.warning.text = "It is not your turn";
-      }
-      this.jacks.twoEyedSelected = false; //TODO: Review this as this jsut a workaround for now.
-      this.jacks.oneEyedSelected = false;
-      this.warning.isActive = false;
-    },
-    playJack: function(event) {
-      if (this.jacks.oneEyed.includes(event.target.dataset.card)) {
-        this.jacks.oneEyedSelected = true;
-        this.jacks.name = event.target.dataset.card;
-      } else if (this.jacks.twoEyed.includes(event.target.dataset.card)) {
-        this.jacks.twoEyedSelected = true;
-        this.jacks.name = event.target.dataset.card;
-      }
-    },
-    showWarning: function(text) {
-      this.warning.isActive = true;
-      this.warning.text = text;
+    for (let row of jsonBoard.jsonBoard.rows) {
+      boardObject.rows.push(
+        row.map(function(card) {
+          return { name: card, isOccupied: false, fill: fills["p"] };
+        })
+      );
     }
-  },
-  watch: {
-    myopponent: function() {
-      this.opponent = this.myopponent;
-    }
-  },
+    return boardObject;
+  })();
 
-  async created() {
-    // first creating the board object and initiating it
-    try {
-      let jb = boardObj.rows;
-      let theGame = await GameService.getGame(this.gameid, this.username);
-      for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
-          if (theGame.board[i][j] != "u") {
-            jb[i][j].isOccupied = true;
-            jb[i][j].fill = fills[theGame.board[i][j].toLowerCase()];
-          }
-        }
-      }
-      this.jsonBoard = jb;
-      this.playerTurn = theGame.playerTurn === this.username;
-      this.players = theGame.players;
-      for (let p of this.players) {
-        if (p.name === this.username) {
-          this.playerIdentifier = p.s;
-        } else {
-          this.opponent = p;
-        }
-      }
-    } catch (err) {
-      this.error = err.message;
-      console.log(err.message);
-    }
+  const baseUrl = "http://" + window.location.hostname + ":50135/api/game";
+  const port = 50135;
 
-    try {
-      this.playerHand = await CardService.getCards(this.gameid, this.username);
-    } catch (err) {
-      this.error = err.message;
-      console.log(err.message);
-    }
-  },
-  mounted() {
-    // now registering all the socket callbacks.
-    this.socket.on("new_hand", newHand => {
-      this.playerHand = newHand;
-    });
-
-    this.socket.on("game_update", theGame => {
-      let jb = boardObj.rows;
-      for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
-          if (theGame.board[i][j] != "u") {
-            jb[i][j].isOccupied = true;
-            jb[i][j].fill = fills[theGame.board[i][j].toLowerCase()];
-          }
-        }
-      }
-
-      this.jsonBoard = jb;
-
-      this.playerTurn = theGame.playerTurn == this.username;
-
-      this.players = theGame.players;
-
-      for (let p of theGame.players) {
-        if (this.username !== p.name) {
-          this.opponent = p;
-          break;
-        }
-      }
-      this.theWinner = theGame.theWinner;
-      this.winnerFound = theGame.winnerFound;
-    });
+  const viewBox = {
+    xmin: 0,
+    ymin: 0,
+    width: 75,
+    height: 50
   }
-};
-</script>
+  const handBox = {
+    width: 850,
+    height: 150
+  }
+  
+  riot.register('boardcard', boardcard);
+  riot.mount('boardcard');
+  
+  
+  export default function TheGame() {
+    return {
+      name: "TheGame",
+      // props: ["socket", "myopponent", "gameid", "username"],
+      state: {
+        "viewBox": viewBox,
+        "handBox": handBox,
+        playerTurn: true,
+        jacks: {
+          twoEyed: ["jd", "jc"],
+          oneEyed: ["jh", "js"],
+          twoEyedSelected: false,
+          oneEyedSelected: false,
+          name: ""
+        },
+        warning: {
+          text: "",
+          isActive: false
+        },
+        winnerFound: false,
+        theWinner: {},
+        playerIdentifier: "",
+        players: [],
+        playerHand: [],
+        opponent: "",
+        theBoard: [],
+        jsonBoard: [],
+        username: "Jono",
+        gameid: localStorage.getItem("gameid"),
+        socket: io("http://" + window.location.hostname + ":" + port),
+        error: "",
+        lastPlayedBcid: ""
+      },
+      playJack(event) {
+        if (this.state.jacks.oneEyed.includes(event.target.dataset.card)) {
+          this.update({
+            jacks: {
+              oneEyedSelected : true,
+              name : event.target.dataset.card
+            }
+          })
+        } else if (this.state.jacks.twoEyed.includes(event.target.dataset.card)) {
+          this.update({
+            jacks: {
+              oneEyedSelected : true,
+              name : event.target.dataset.card
+            }
+          })
+        }
+      },
+      takeTurn(cardName, bcid) {
+        let position = {
+          row: bcid.split("-")[0],
+          col: bcid.split("-")[1]
+        };
+        if (this.state.playerTurn) {
+          if (this.state.jacks.oneEyedSelected || this.state.jacks.twoEyedSelected) {
+            this.state.socket.emit("card_played", {
+              cardName: this.state.jacks.name,
+              gameid: this.state.gameid,
+              player: this.state.username
+            });
+          } else {
+            this.state.socket.emit("card_played", {
+              cardName: cardName,
+              gameid: this.state.gameid,
+              player: this.state.username
+            });
+          }
+          this.state.socket.emit("take_turn", {
+            gameid: this.state.gameid,
+            position: position,
+            s: this.state.playerIdentifier
+          });
+          this.state.playerTurn = !this.state.playerTurn;
+          this.state.warning.isActive = false;
+        } else {
+          this.state.warning.isActive = true;
+          this.state.warning.text = "It is not your turn";
+        }
+        this.state.jacks.twoEyedSelected = false; //TODO: Review this as this jsut a workaround for now.
+        this.state.jacks.oneEyedSelected = false;
+        this.state.warning.isActive = false;
+      },
 
-<style scoped>
-.players-hand {
-  margin: 1em;
-  background: #797386;
-  padding: 1em;
-}
-.players-card {
-  margin: 0.5em;
-}
-.board {
-  background: #a3a3a3;
-}
-</style>
+      methods: {
+        chipParams: function(irow, icard) {
+          return {
+            r: viewBox.height / 50,
+            opacity: 1.0,
+            cx: viewBox.width / 20 + (icard * viewBox.width) / 10,
+            cy: viewBox.height / 20 + (irow * viewBox.height) / 10
+          };
+        },
+        imgParams: function(irow, icard) {
+          return {
+            height: viewBox.height / 11,
+            width: viewBox.width / 11,
+            x: viewBox.width / 200 + (icard * viewBox.width) / 10,
+            y: viewBox.height / 200 + (irow * viewBox.height) / 10
+          };
+        },
+        
+        showWarning: function(text) {
+          this.state.warning.isActive = true;
+          this.state.warning.text = text;
+        },
+        attemptLogin: async (gameid, username) => {
+          try {
+            const res = await fetch(
+              baseUrl + "?gameid=" + gameid + "&username=" + username
+            );
+            if (!res.ok) {
+              throw Error("Game wasn't retrievable");
+            }
+            localStorage.setItem("gameid", gameid);
+            localStorage.setItem("username", username);
+            // this.$emit("next-app", "GameApp");
+          } catch (err) {
+            // this.state.error = err.message;
+            console.log(err.message + "attempting to create a new game...");
+          
+          }
+        },
+        newGame: async function(gameid, username) {
+          try {
+            const res = await fetch(baseUrl, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                "username": username
+              })
+            });
+            const resj = await res.json();
+            console.log(resj);
+            localStorage.setItem("gameid", resj.gameid);
+            localStorage.setItem("username", username);
+            // this.$emit("next-app", "GameApp");
+          } catch (err) {
+            this.state.error = err.message;
+            console.log(err.message);
+          }
+        }
+      },
+      // watch: {
+      //   myopponent: function() {
+      //     this.state.opponent = this.state.myopponent;
+      //   }
+      // },
+      async onBeforeMount(props, state) {
+        // first creating the board object and initiating it
+        // ["socket", "myopponent", "gameid", "username"]
+        try {
+          await this.methods.newGame(this.state.gameid, this.state.username);
+        } catch(err) {
+          console.log("onBeforeMount Error: " + err);
+        }
+
+        this.update( {
+          myopponent: {
+            name: "McSweaty"
+          },
+          gameid: localStorage.getItem('gameid'),
+        });
+        try {
+          let jb = boardObj.rows;
+          let theGame = await GameService.getGame(this.state.gameid, this.state.username);
+          console.log(theGame);
+          for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+              if (theGame.board[i][j] != "u") {
+                jb[i][j].isOccupied = true;
+                jb[i][j].fill = fills[theGame.board[i][j].toLowerCase()];
+              }
+            }
+          }
+          let myTurn = (theGame.playerTurn === this.state.username);
+          this.update({
+            jsonBoard: jb,
+            playerTurn: myTurn,
+            players: theGame.players
+          });
+          console.log("stored the game ok.")
+          
+          for (let p of this.state.players) {
+            if (p.name === this.state.username) {
+              this.update( {
+                playerIdentifier: p.s
+              })
+            } else {
+              this.update( {
+                opponent: p
+              })
+            }
+          }
+        } catch (err) {
+          this.state.error = err.message;
+          console.log(err.message);
+          throw(err);
+        }
+
+        try {
+          this.update({
+            playerHand: await CardService.getCards(this.state.gameid, this.state.username)
+          });
+        } catch (err) {
+          this.state.error = err.message;
+          console.log(err.message);
+          throw(err);
+        }
+        console.log(this.state.playerHand);
+      },
+      onMounted() {
+        // now registering all the socket callbacks.
+        this.state.socket.on("new_hand", newHand => {
+          this.state.playerHand = newHand;
+        });
+
+        this.state.socket.on("game_update", theGame => {
+          let jb = boardObj.rows;
+          for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+              if (theGame.board[i][j] != "u") {
+                jb[i][j].isOccupied = true;
+                jb[i][j].fill = fills[theGame.board[i][j].toLowerCase()];
+              }
+            }
+          }
+
+          this.state.jsonBoard = jb;
+
+          this.state.playerTurn = theGame.playerTurn == this.state.username;
+
+          this.state.players = theGame.players;
+
+          for (let p of theGame.players) {
+            if (this.state.username !== p.name) {
+              this.state.opponent = p;
+              break;
+            }
+          }
+          this.state.theWinner = theGame.theWinner;
+          this.state.winnerFound = theGame.winnerFound;
+        });
+      },
+      onUpdated() {
+        if(this.state.lastPlayedBcid != this.bcid) {
+          console.log(this.cardName + this.bcid);
+        }
+        if(this.state.warning.text != this.warningText && this.warningText != "") {
+          this.state.warning.text = this.warningText;
+          this.state.warning.isActive = true;
+        }
+      }
+    }
+  };
+
+  
+  </script>
+
+  <style>
+  .players-hand {
+    margin: 1em;
+    background: #797386;
+    padding: 1em;
+  }
+  .players-card {
+    margin: 0.5em;
+  }
+  .board {
+    background: #a3a3a3;
+  }
+  </style>
+</the-game>

@@ -1,0 +1,12 @@
+{
+    "s2c": {
+        "board" : [ ], 
+        "myCards": [ ],
+        "myTurn": false,
+        "sequences": 0
+    },
+    "c2s": {
+        "playCard": "4h",
+        "discardCard": "3h"
+    }
+}

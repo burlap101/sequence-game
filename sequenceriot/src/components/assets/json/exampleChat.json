@@ -1,0 +1,30 @@
+{
+    "s2c": {
+        "allMessages": [
+            {
+                "who": "player1",
+                "time": "23:31:09",
+                "date": "8/8/2019",
+                "text": "Hey Hey!"
+            },
+            {
+                "who": "player2",
+                "time": "23:31:30",
+                "date": "8/8/2019",
+                "text": "Sup?"
+            }
+        ],
+        "lastMessage": {
+            "who": "player2",
+            "time": "23:31:30",
+            "date": "8/8/2019",
+            "text": "Sup?"
+        }
+    },
+    "c2s": {
+        "send": {
+            "who": "player2",
+            "text": "Sup?"
+        }
+    }
+}

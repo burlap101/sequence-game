@@ -1,0 +1,102 @@
+<boardcard>
+  <span class="mx-1">
+    <svg
+      width="{props.imgParams.width*16}"
+      height="{props.imgParams.height*16}"
+      xmlns="http://www.w3.org/2000/svg">
+      <image
+        href="{'/assets/cards/' + props.card.name + '.svg'}"
+        height="{props.imgParams.height*15}"
+        width="{props.imgParams.width*15}"
+        x="0"
+        y="0"
+        onclick="{placeChip}"
+      />
+      <circle
+        if="{state.isOccupied}"
+        cx="{props.imgParams.width*15/2}"
+        cy="{props.imgParams.height*15/2}"
+        r="{props.chipParams.r*15}"
+        fill="{props.card.fill}"
+      />
+    </svg>
+  </span>
+
+  <script>
+  import store from './assets/js/store'
+
+  export default function boardcard() {
+    return {
+      name: "boardcard",
+      // props: [
+      //   "card",
+      //   "imgParams",
+      //   "chipParams",
+      //   "playerHand",
+      //   "playerTurn",
+      //   "aiHand",
+      //   "bcid",
+      //   "jacks",
+      //   "winnerFound"
+      // ],
+      state: {
+        warningText: "",
+        isOccupied: false
+      },
+      placeChip() {
+        console.log(this.props.card.name + " clicked");
+        if (!this.props.winnerFound && this.props.card.name != "w") {
+          if (
+            this.props.playerHand.includes(this.props.card.name) &&
+            !this.state.isOccupied &&
+            this.props.playerTurn
+          ) {
+            this.update({
+              isOccupied : true
+            })
+            // this.$emit("turn-taken", this.card.name, this.bcid);
+            store.dispatch('turnTaken', this.props.card.name, this.props.bcid);
+          } else if (
+            (this.props.jacks.oneEyedSelected || this.props.jacks.twoEyedSelected) &&
+            !this.state.isOccupied &&
+            this.props.playerTurn
+          ) {
+            this.update({
+              isOccupied: true
+            });
+            // this.$emit("jack-played", this.card.name, this.bcid);
+            store.dispatch('jackPlayed', this.props.card.name, this.props.bcid);
+          } else if (this.state.isOccupied) {
+            this.update({
+              warningText : "That location is already occupied. Please select another"
+            })
+            // this.$emit("show-warning", this.warningText);
+            store.dispatch('showWarning', this.state.warningText);
+          } else if (!this.props.playerHand.includes(this.props.card.name)) {
+            this.update({
+              warningText:"You don't have that card in your hand. Please select another."
+            })
+            // this.$emit("show-warning", this.warningText);
+            store.dispatch('showWarning', this.state.warningText);
+          }
+        } else if (this.winnerFound) {
+
+          this.update({
+            warningText: "Game's over. You can start another by hitting refresh and clicking 'New Game'"
+          })
+          // this.$emit("show-warning", this.warningText);
+          store.dispatch('showWarning', this.state.warningText);
+        }
+      },
+      onMounted() {
+        console.log(this.props);
+        store.install(this);
+        this.update({
+           isOccupied : this.props.card.isOccupied
+        });
+      }
+
+    }
+  };
+  </script>
+</boardcard>

@@ -1,0 +1,18 @@
+{
+    "suites": {
+        "h": "hearts",
+        "d": "diamonds",
+        "c": "clubs",
+        "s": "spades"
+    },
+
+    "faces": {
+        "a": "ace",
+        "k": "king",
+        "q": "queen",
+        "j": "jack"
+    },
+
+    "two-eyed": ["jd", "jc"],
+    "one-eyed": ["jh", "js"]
+}
