@@ -2,6 +2,9 @@
 node_modules
 /dist
 data/
+sequence/
+sequenceriot/
+stats/
 
 
 # local env files

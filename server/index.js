@@ -26,7 +26,7 @@ const GameBoard = require('./game/js/GameBoard');
 
 // handle production
 let isProduction = false
-if(process.env.PWD.split('/')[2] === 'jcrowle8') {
+if(process.env.PWD.split('/')[2] === 'jcrowle8' || process.env.NODE_ENV === 'production') {
     isProduction = true;
 }
 

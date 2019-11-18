@@ -7,7 +7,7 @@ const cors = require('cors');
 const router = express.Router();
 
 let isProduction = false
-if(process.env.PWD.split('/')[2]=='jcrowle8') {
+if (process.env.PWD.split('/')[2] == 'jcrowle8' || process.env.NODE_ENV === 'production') {
     isProduction = true;
 }
 
