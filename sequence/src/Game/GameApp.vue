@@ -24,8 +24,6 @@ import TheGame from "./components/TheGame.vue";
 import Chat from "./components/Chat.vue";
 import io from "socket.io-client";
 
-const port = 50135;
-
 export default {
   name: "GameApp",
   components: {
@@ -34,7 +32,7 @@ export default {
   },
   data() {
     return {
-      socket: io(window.location.protocol + "//" + window.location.hostname + ":" + port),
+      socket: io(window.location.protocol + "//" + window.location.hostname + ":" + window.location.port),
       opponent: {
         name: "Mr-Nobody"
       },

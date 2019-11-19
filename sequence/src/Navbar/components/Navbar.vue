@@ -37,7 +37,7 @@
 </template>
 
 <script>
-const statsUrl = window.location.protocol + "//" + window.location.hostname + ":50135/stats";
+const statsUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/stats";
 
 export default {
   name: "Navbar",
