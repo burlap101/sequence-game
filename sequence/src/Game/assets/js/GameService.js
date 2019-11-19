@@ -1,4 +1,10 @@
-const url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/api/game";
+const url =
+  window.location.protocol +
+  "//" +
+  window.location.hostname +
+  ":" +
+  window.location.port +
+  "/api/game";
 
 export class GameService {
   static getGame(gameid, username) {

@@ -92,6 +92,7 @@ export default {
   },
   async created() {
     console.log("attempting to get chat messages");
+    this.gameid = localStorage.getItem("gameid");
     try {
       this.messages = await ChatService.getMessages(this.gameid);
     } catch (err) {
@@ -101,18 +102,18 @@ export default {
   },
   mounted() {
     // register the socket message types to look out for chat
-    this.socket.on("new_chat_message", (data) => {
+    this.socket.on("new_chat_message", data => {
       data.when = new Date().toTimeString().split(" ")[0];
       this.messages.push(data);
     });
-    this.socket.on("status", (message) => {
+    this.socket.on("status", message => {
       this.messages.push({
         who: "Gamebot",
         text: message,
         when: new Date().toTimeString().split(" ")[0]
       });
     });
-    this.socket.on("kick", (reason) => {
+    this.socket.on("kick", reason => {
       this.messages.push({
         who: "Gamebot",
         text: "You have been kicked: " + reason.text,

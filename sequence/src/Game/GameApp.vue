@@ -10,7 +10,8 @@
         />
       </div>
       <div class="col-4">
-        <Chat v-bind:socket="socket" 
+        <Chat
+          v-bind:socket="socket"
           v-bind:opponent="opponent"
           v-on:username-cmd="updateUsername"
         />
@@ -32,7 +33,13 @@ export default {
   },
   data() {
     return {
-      socket: io(window.location.protocol + "//" + window.location.hostname + ":" + window.location.port),
+      socket: io(
+        window.location.protocol +
+          "//" +
+          window.location.hostname +
+          ":" +
+          window.location.port
+      ),
       opponent: {
         name: "Mr-Nobody"
       },

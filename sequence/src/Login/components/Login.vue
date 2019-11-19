@@ -66,7 +66,13 @@
 </template>
 
 <script>
-const baseUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/api/game";
+const baseUrl =
+  window.location.protocol +
+  "//" +
+  window.location.hostname +
+  ":" +
+  window.location.port +
+  "/api/game";
 
 export default {
   name: "Login",
