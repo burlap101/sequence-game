@@ -34,7 +34,7 @@ export default {
   },
   data() {
     return {
-      socket: io("http://" + window.location.hostname + ":" + port),
+      socket: io(window.location.protocol + "//" + window.location.hostname + ":" + port),
       opponent: {
         name: "Mr-Nobody"
       },

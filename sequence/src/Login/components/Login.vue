@@ -66,7 +66,7 @@
 </template>
 
 <script>
-const baseUrl = "http://" + window.location.hostname + ":50135/api/game";
+const baseUrl = window.location.protocol + "//" + window.location.hostname + ":50135/api/game";
 
 export default {
   name: "Login",
