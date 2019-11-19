@@ -29,16 +29,19 @@ router.post('/', async function(req, res) {
 })
 
 async function loadChatMessagesCollection() {
-    const client = await mongodb.MongoClient.connect
-    ('mongodb://localhost:27017', {
-        useNewUrlParser: true
-    });
-
     if(isProduction) {
-        return client.db('cosc560_jcrowle8').collection('chatMessages')
+      const client = await mongodb.MongoClient.connect
+      (serverSettings.production.mongo.url, {
+        useNewUrlParser: true
+      });
+      return client.db(serverSettings.production.mongo.name).collection('chatMessages')
+    } else {
+      const client = await mongodb.MongoClient.connect
+      (serverSettings.dev.mongo.url, {
+        useNewUrlParser: true
+      });
+      return client.db(serverSettings.dev.mongo.name).collection('chatMessages')
     }
-
-    return client.db('sequencedb').collection('chatMessages')
 }
 
 module.exports = router;

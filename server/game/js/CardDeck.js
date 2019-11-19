@@ -1,4 +1,5 @@
 const mongodb = require('mongodb');
+const serverSettings = require('../../settings.json');
 
 const suites = {
   h: "hearts",
@@ -15,7 +16,7 @@ const faces = {
 
 // handle production
 let isProduction = false
-if(process.env.PWD.split('/')[2] === 'jcrowle8') {
+if (process.env.PWD.split('/')[2] === 'jcrowle8' || process.env.NODE_ENV === 'production') {
     isProduction = true;
 }
 
@@ -63,16 +64,20 @@ class CardDeck {
 
   static async loadCardsCollection() {
     try {
-      const client = await mongodb.MongoClient.connect
-      ('mongodb://localhost:27017', {
+      if (isProduction) {
+        const client = await mongodb.MongoClient.connect
+        (serverSettings.production.mongo.url, {
           useNewUrlParser: true
-      });
-
-      if(isProduction) {
-          return client.db('cosc560_jcrowle8').collection('cards')
+        });
+        return client.db(serverSettings.production.mongo.name).collection('cards')
+      } else {
+        const client = await mongodb.MongoClient.connect
+        (serverSettings.dev.mongo.url, {
+          useNewUrlParser: true
+        });
+        return client.db(serverSettings.dev.mongo.name).collection('cards')
       }
 
-      return client.db('sequencedb').collection('cards')
     } catch(err) {
       console.log(err);
       throw Error("There was a problem accessing the card collection")

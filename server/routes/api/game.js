@@ -2,7 +2,7 @@ const express = require('express');
 const mongodb = require('mongodb');
 const GameBoard = require('../../game/js/GameBoard');
 const CardDeck = require('../../game/js/CardDeck');
-const cors = require('cors');
+const serverSettings = require('../../settings.json');
 
 const router = express.Router();
 
@@ -80,16 +80,19 @@ router.post('/', async function(req, res) {
 });
 
 async function loadGamesCollection() {
-    const client = await mongodb.MongoClient.connect
-    ('mongodb://localhost:27017', {
+    if (isProduction) {
+      const client = await mongodb.MongoClient.connect
+      (serverSettings.production.mongo.url, {
         useNewUrlParser: true
-    });
-
-    if(isProduction) {
-        return client.db('cosc560_jcrowle8').collection('games')
+      });
+      return client.db(serverSettings.production.mongo.name).collection('games');
+    } else {
+      const client = await mongodb.MongoClient.connect
+      (serverSettings.dev.mongo.url, {
+        useNewUrlParser: true
+      });
+      return client.db(serverSettings.dev.mongo.name).collection('games');
     }
-
-    return client.db('sequencedb').collection('games')
 }
 
 module.exports = router;

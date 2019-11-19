@@ -1,0 +1,14 @@
+{
+  "dev" : {
+    "mongo" : {
+      "url" : "mongodb://localhost:27017",
+      "name" : "sequencedb"
+    }
+  },
+  "production" : {
+    "mongo" : {
+      "url" : "mongodb+srv://gamers:sequence123@sequence01-fgp9r.mongodb.net/test?retryWrites=true&w=majority",
+      "name" : "sequencedb" 
+    }
+  }
+}

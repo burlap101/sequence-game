@@ -1,6 +1,7 @@
 const express = require('express');
 const mongodb = require('mongodb');
 const CardDeck = require('../../game/js/CardDeck');
+const serverSettings = require('../../settings.json');
 
 const router = express.Router();
 
@@ -37,16 +38,21 @@ router.get('/', async function(req, res) {
 });
 
 async function loadCardsCollection() {
-    const client = await mongodb.MongoClient.connect
-    ('mongodb://localhost:27017', {
-        useNewUrlParser: true
-    });
-
     if(isProduction) {
-        return client.db('cosc560_jcrowle8').collection('cards')
+      const client = await mongodb.MongoClient.connect
+      (serverSettings.production.mongo.url, {
+        useNewUrlParser: true
+      });
+      return client.db(serverSettings.production.mongo.name).collection('cards')
+    } else {
+      const client = await mongodb.MongoClient.connect
+      (serverSettings.dev.mongo.url, {
+        useNewUrlParser: true
+      });
+      return client.db(serverSettings.dev.mongo.name).collection('cards')
     }
 
-    return client.db('sequencedb').collection('cards')
+    
 }
 
 module.exports = router;

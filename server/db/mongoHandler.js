@@ -1,7 +1,7 @@
 const mongodb = require('mongodb');
 
 let isProduction = false
-if(process.env.PWD.split('/')[2] === 'jcrowle8') {
+if (process.env.PWD.split('/')[2] === 'jcrowle8' || process.env.NODE_ENV === 'production') {
     isProduction = true;
 }
 
