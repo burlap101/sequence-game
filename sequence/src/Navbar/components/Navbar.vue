@@ -23,9 +23,9 @@
             >Rules</a
           >
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link" target="_blank" v-bind:href="statsurl">Stats</a>
-        </li>
+        </li> -->
       </ul>
       <span
         v-if="gameid != '' && gameid != undefined"
