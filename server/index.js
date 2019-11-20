@@ -66,16 +66,19 @@ if(isProduction || networkDev) {
 
 var socketConns = 0;
 
-io.sockets.on('connection', async function (socket) {
-    
+io.sockets.on('connection', async (socket) => {
     socketConns += 1;
+    console.log("Client connected, total clients = " + socketConns);
+    
+    
 
     socket.on('disconnect', function() {
-        socketConns -= 1;
+      socketConns -= 1;
+      console.log("Client disconnected, total clients = " + socketConns);
     })
 
     sendStatus = function(s) {
-        socket.emit('status', s);
+      socket.emit('status', s);
     }
 
     const chatMessages = await loadChatMessagesCollection();
