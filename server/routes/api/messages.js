@@ -43,13 +43,13 @@ async function loadChatMessagesCollection() {
       (serverSettings.production.mongo.url, {
         useNewUrlParser: true
       });
-      return client.db(serverSettings.production.mongo.name).collection('chatMessages')
+      return client.db(serverSettings.production.mongo.name).collection('chatmessages')
     } else {
       const client = await mongodb.MongoClient.connect
       (serverSettings.dev.mongo.url, {
         useNewUrlParser: true
       });
-      return client.db(serverSettings.dev.mongo.name).collection('chatMessages')
+      return client.db(serverSettings.dev.mongo.name).collection('chatmessages')
     }
 }
 

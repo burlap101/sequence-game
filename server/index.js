@@ -199,10 +199,10 @@ async function loadChatMessagesCollection() {
     });
 
     if(isProduction) {
-        return client.db('cosc560_jcrowle8').collection('chatMessages');
+        return client.db('cosc560_jcrowle8').collection('chatmessages');
     }
 
-    return client.db('sequencedb').collection('chatMessages');
+    return client.db('sequencedb').collection('chatmessages');
 }
 
 
