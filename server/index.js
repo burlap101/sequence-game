@@ -12,6 +12,11 @@ String.prototype.mytrim = function () {
   return s;
 };
 
+let isProduction = false
+if (process.env.PWD.split('/')[2] === 'jcrowle8' || process.env.NODE_ENV === 'production') {
+  isProduction = true;
+}
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -19,17 +24,18 @@ const mongodb = require('mongodb');
 const serverSettings = require('./settings.json');
 
 const app = express();
-const server = require('http').Server(app);
+let server = require('http').Server(app);
+if (isProduction) {
+  server = require('https').Server(app);
+}
+
 const io = require('socket.io')(server);
 
 const CardDeck = require('./game/js/CardDeck');
 const GameBoard = require('./game/js/GameBoard');
 
 // handle production
-let isProduction = false
-if(process.env.PWD.split('/')[2] === 'jcrowle8' || process.env.NODE_ENV === 'production') {
-    isProduction = true;
-}
+
 
 // if(!isProduction) {
 //     app.options('*', cors())
