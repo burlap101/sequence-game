@@ -24,19 +24,12 @@ const mongodb = require('mongodb');
 const serverSettings = require('./settings.json');
 
 const app = express();
-const server = require('http').Server(app);
+const server = require('http').createServer(app);
 
-const io = require('socket.io')(server);
+const io = require('socket.io').listen(server);
 
 const CardDeck = require('./game/js/CardDeck');
 const GameBoard = require('./game/js/GameBoard');
-
-// handle production
-
-
-// if(!isProduction) {
-//     app.options('*', cors())
-// }
 
 // Middleware
 app.use(bodyParser.json());
@@ -73,7 +66,7 @@ if(isProduction || networkDev) {
 
 var socketConns = 0;
 
-io.on('connection', async function (socket) {
+io.sockets.on('connection', async function (socket) {
     
     socketConns += 1;
 
