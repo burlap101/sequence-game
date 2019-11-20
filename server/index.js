@@ -16,6 +16,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongodb = require('mongodb');
+const serverSettings = require('./settings.json');
 
 const app = express();
 const server = require('http').Server(app);
@@ -193,30 +194,36 @@ server.listen(port, function() {
 });
 
 async function loadChatMessagesCollection() {
+  if (isProduction) {
     const client = await mongodb.MongoClient.connect
-    ('mongodb://localhost:27017', {
+      (serverSettings.production.mongo.url, {
         useNewUrlParser: true
-    });
-
-    if(isProduction) {
-        return client.db('cosc560_jcrowle8').collection('chatmessages');
-    }
-
-    return client.db('sequencedb').collection('chatmessages');
+      });
+    return client.db(serverSettings.production.mongo.name).collection('chatmessages')
+  } else {
+    const client = await mongodb.MongoClient.connect
+      (serverSettings.dev.mongo.url, {
+        useNewUrlParser: true
+      });
+    return client.db(serverSettings.dev.mongo.name).collection('chatmessages')
+  }
 }
 
 
 async function loadGamesCollection() {
+  if (isProduction) {
     const client = await mongodb.MongoClient.connect
-    ('mongodb://localhost:27017', {
+      (serverSettings.production.mongo.url, {
         useNewUrlParser: true
-    });
-
-    if(isProduction) {
-        return client.db('cosc560_jcrowle8').collection('games')
-    }
-
-    return client.db('sequencedb').collection('games')
+      });
+    return client.db(serverSettings.production.mongo.name).collection('games');
+  } else {
+    const client = await mongodb.MongoClient.connect
+      (serverSettings.dev.mongo.url, {
+        useNewUrlParser: true
+      });
+    return client.db(serverSettings.dev.mongo.name).collection('games');
+  }
 }
 
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const mongodb = require('mongodb');
+const serverSettings = require('../../settings.json');
 
 const router = express.Router();
 
@@ -19,7 +20,6 @@ router.get('/', async function(req, res) {
 
   } catch(err) {
     console.log(err.message);
-    reject(err);
   }
     
 });
