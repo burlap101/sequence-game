@@ -11,8 +11,17 @@ if (process.env.PWD.split('/')[2] == 'jcrowle8' || process.env.NODE_ENV === 'pro
 // Get messages
 
 router.get('/', async function(req, res) {
+  try {
     const messages = await loadChatMessagesCollection();
-    res.send(await messages.find({"gameid" : req.query.gameid}).toArray());
+    let theMessages = await messages.find({ "gameid": req.query.gameid }).toArray();
+
+    res.send(theMessages);
+
+  } catch(err) {
+    console.log(err.message);
+    reject(err);
+  }
+    
 });
 
 // Add message
