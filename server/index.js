@@ -24,10 +24,7 @@ const mongodb = require('mongodb');
 const serverSettings = require('./settings.json');
 
 const app = express();
-let server = require('http').Server(app);
-if (isProduction) {
-  server = require('https').Server(app);
-}
+const server = require('http').Server(app);
 
 const io = require('socket.io')(server);
 
