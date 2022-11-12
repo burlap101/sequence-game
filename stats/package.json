@@ -22,6 +22,6 @@
     "eslint": "^6.5.1",
     "nodemon": "^1.19.3",
     "webpack": "^4.41.1",
-    "webpack-cli": "^3.3.9"
+    "webpack-cli": "^3.3.12"
   }
 }
