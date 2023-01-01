@@ -21,13 +21,13 @@
     "@riotjs/cli": "^4.0.2",
     "@riotjs/compiler": "^4.5.1",
     "@riotjs/hot-reload": "^4.0.0",
-    "@riotjs/webpack-loader": "^4.0.1",
-    "babel-loader": "^8.0.6",
+    "@riotjs/webpack-loader": "^6.0.0",
+    "babel-loader": "^8.3.0",
     "eslint": "^6.5.1",
     "nodemon": "^1.19.4",
     "riot-state": "^1.0.4",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^3.8.2"
   }
 }
